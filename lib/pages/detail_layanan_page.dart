@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
-class DetailLayananPage extends StatelessWidget {
+import '../models/pengajuan_model.dart';
+
+class DetailLayananPage extends StatefulWidget {
   final String namaLayanan;
   final String dinas;
   final String jam;
@@ -13,6 +16,40 @@ class DetailLayananPage extends StatelessWidget {
     required this.jam,
     required this.keterangan,
   });
+
+  @override
+  State<DetailLayananPage> createState() =>
+      _DetailLayananPageState();
+}
+
+class _DetailLayananPageState
+    extends State<DetailLayananPage> {
+  bool sedangMengirim = false;
+
+  Future<void> ajukanPermohonan() async {
+    setState(() {
+      sedangMengirim = true;
+    });
+
+    await Future.delayed(
+      const Duration(seconds: 1),
+    );
+
+    if (!mounted) return;
+
+    context.read<PengajuanModel>().tambahPengajuan(
+          widget.namaLayanan,
+        );
+
+    setState(() {
+      sedangMengirim = false;
+    });
+
+    Navigator.pop(
+      context,
+      'Permohonan ${widget.namaLayanan} telah diajukan',
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +66,7 @@ class DetailLayananPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              namaLayanan,
+              widget.namaLayanan,
               style: const TextStyle(
                 fontSize: 25,
                 fontWeight: FontWeight.bold,
@@ -38,9 +75,9 @@ class DetailLayananPage extends StatelessWidget {
 
             const SizedBox(height: 25),
 
-            Text(
+            const Text(
               'Dinas Penanggung Jawab',
-              style: const TextStyle(
+              style: TextStyle(
                 color: Colors.grey,
               ),
             ),
@@ -48,7 +85,7 @@ class DetailLayananPage extends StatelessWidget {
             const SizedBox(height: 5),
 
             Text(
-              dinas,
+              widget.dinas,
               style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -67,7 +104,7 @@ class DetailLayananPage extends StatelessWidget {
             const SizedBox(height: 5),
 
             Text(
-              jam,
+              widget.jam,
               style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -86,7 +123,7 @@ class DetailLayananPage extends StatelessWidget {
             const SizedBox(height: 5),
 
             Text(
-              keterangan,
+              widget.keterangan,
               style: const TextStyle(
                 fontSize: 16,
               ),
@@ -98,15 +135,28 @@ class DetailLayananPage extends StatelessWidget {
               width: double.infinity,
               height: 55,
               child: ElevatedButton(
-                onPressed: () {
-                  Navigator.pop(
-                    context,
-                    'Permohonan $namaLayanan telah diajukan',
-                  );
-                },
-                child: const Text(
-                  'Ajukan Permohonan',
-                ),
+                onPressed: sedangMengirim
+                    ? null
+                    : ajukanPermohonan,
+                child: sedangMengirim
+                    ? const Row(
+                        mainAxisAlignment:
+                            MainAxisAlignment.center,
+                        children: [
+                          SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                            ),
+                          ),
+                          SizedBox(width: 12),
+                          Text('Mengirim...'),
+                        ],
+                      )
+                    : const Text(
+                        'Ajukan Permohonan',
+                      ),
               ),
             ),
           ],

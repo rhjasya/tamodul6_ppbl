@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
+import '../models/pengajuan_model.dart';
 import '../pages/beranda_page.dart';
 import '../pages/layanan_page.dart';
 import '../pages/warga_page.dart';
@@ -9,14 +11,16 @@ class KerangkaNavigasi extends StatefulWidget {
   const KerangkaNavigasi({super.key});
 
   @override
-  State<KerangkaNavigasi> createState() => _KerangkaNavigasiState();
+  State<KerangkaNavigasi> createState() =>
+      _KerangkaNavigasiState();
 }
 
-class _KerangkaNavigasiState extends State<KerangkaNavigasi> {
+class _KerangkaNavigasiState
+    extends State<KerangkaNavigasi> {
   int indeksAktif = 0;
 
   final List<Widget> halaman = const [
-    BerandaPage(),
+    HalamanBeranda(),
     LayananPage(),
     WargaPage(),
   ];
@@ -27,9 +31,60 @@ class _KerangkaNavigasiState extends State<KerangkaNavigasi> {
     });
   }
 
+  Widget ikonWarga({
+    bool terpilih = false,
+  }) {
+    return Builder(
+      builder: (context) {
+        final totalPengajuan =
+            context.select<PengajuanModel, int>(
+          (model) => model.totalPengajuan,
+        );
+
+        return Stack(
+          clipBehavior: Clip.none,
+          children: [
+            Icon(
+              terpilih
+                  ? Icons.person
+                  : Icons.person_outline,
+            ),
+
+            if (totalPengajuan > 0)
+              Positioned(
+                right: -8,
+                top: -8,
+                child: Container(
+                  padding: const EdgeInsets.all(4),
+                  decoration: const BoxDecoration(
+                    color: Colors.red,
+                    shape: BoxShape.circle,
+                  ),
+                  constraints: const BoxConstraints(
+                    minWidth: 18,
+                    minHeight: 18,
+                  ),
+                  child: Text(
+                    '$totalPengajuan',
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    final lebarLayar = MediaQuery.of(context).size.width;
+    final lebarLayar =
+        MediaQuery.of(context).size.width;
     final layarLebar = lebarLayar >= 600;
 
     return PopScope(
@@ -132,21 +187,25 @@ class _KerangkaNavigasiState extends State<KerangkaNavigasi> {
                 selectedIndex: indeksAktif,
                 onDestinationSelected: ubahHalaman,
                 labelType: NavigationRailLabelType.all,
-                destinations: const [
-                  NavigationRailDestination(
+                destinations: [
+                  const NavigationRailDestination(
                     icon: Icon(Icons.home_outlined),
                     selectedIcon: Icon(Icons.home),
                     label: Text('Beranda'),
                   ),
-                  NavigationRailDestination(
+
+                  const NavigationRailDestination(
                     icon: Icon(Icons.list_outlined),
                     selectedIcon: Icon(Icons.list),
                     label: Text('Layanan'),
                   ),
+
                   NavigationRailDestination(
-                    icon: Icon(Icons.person_outline),
-                    selectedIcon: Icon(Icons.person),
-                    label: Text('Warga'),
+                    icon: ikonWarga(),
+                    selectedIcon: ikonWarga(
+                      terpilih: true,
+                    ),
+                    label: const Text('Warga'),
                   ),
                 ],
               ),
@@ -162,20 +221,24 @@ class _KerangkaNavigasiState extends State<KerangkaNavigasi> {
             : NavigationBar(
                 selectedIndex: indeksAktif,
                 onDestinationSelected: ubahHalaman,
-                destinations: const [
-                  NavigationDestination(
+                destinations: [
+                  const NavigationDestination(
                     icon: Icon(Icons.home_outlined),
                     selectedIcon: Icon(Icons.home),
                     label: 'Beranda',
                   ),
-                  NavigationDestination(
+
+                  const NavigationDestination(
                     icon: Icon(Icons.list_outlined),
                     selectedIcon: Icon(Icons.list),
                     label: 'Layanan',
                   ),
+
                   NavigationDestination(
-                    icon: Icon(Icons.person_outline),
-                    selectedIcon: Icon(Icons.person),
+                    icon: ikonWarga(),
+                    selectedIcon: ikonWarga(
+                      terpilih: true,
+                    ),
                     label: 'Warga',
                   ),
                 ],

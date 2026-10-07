@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
+import '../models/favorit_model.dart';
 import '../navigation/app_routes.dart';
 
 class LayananPage extends StatelessWidget {
@@ -14,6 +16,8 @@ class LayananPage extends StatelessWidget {
       AppRoutes.detailLayanan,
       arguments: layanan,
     );
+
+    if (!context.mounted) return;
 
     if (hasil != null) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -31,6 +35,9 @@ class LayananPage extends StatelessWidget {
     String jam,
     String keterangan,
   ) {
+    final favorit = context.watch<FavoritModel>();
+    final sudahFavorit = favorit.daftarFavorit.contains(nama);
+
     return Card(
       child: ListTile(
         leading: const Icon(
@@ -44,7 +51,29 @@ class LayananPage extends StatelessWidget {
           ),
         ),
         subtitle: Text(dinas),
-        trailing: const Icon(Icons.arrow_forward),
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            IconButton(
+              onPressed: () {
+                if (sudahFavorit) {
+                  context.read<FavoritModel>().batalTandai(nama);
+                } else {
+                  context.read<FavoritModel>().tandai(nama);
+                }
+              },
+              icon: Icon(
+                sudahFavorit
+                    ? Icons.star
+                    : Icons.star_border,
+                color: sudahFavorit
+                    ? Colors.amber
+                    : Colors.grey,
+              ),
+            ),
+            const Icon(Icons.arrow_forward),
+          ],
+        ),
         onTap: () {
           bukaDetail(
             context,
@@ -73,7 +102,6 @@ class LayananPage extends StatelessWidget {
               Tab(text: 'Transportasi'),
             ],
           ),
-
           Expanded(
             child: TabBarView(
               children: [
@@ -103,7 +131,6 @@ class LayananPage extends StatelessWidget {
                     ),
                   ],
                 ),
-
                 ListView(
                   padding: const EdgeInsets.all(16),
                   children: [
@@ -130,7 +157,6 @@ class LayananPage extends StatelessWidget {
                     ),
                   ],
                 ),
-
                 ListView(
                   padding: const EdgeInsets.all(16),
                   children: [
