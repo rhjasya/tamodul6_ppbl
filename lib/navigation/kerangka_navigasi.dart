@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -5,6 +6,10 @@ import '../models/pengajuan_model.dart';
 import '../pages/beranda_page.dart';
 import '../pages/layanan_page.dart';
 import '../pages/warga_page.dart';
+import '../pages/formulir_pengajuan_page.dart';
+import '../pages/chat_page.dart';
+import '../pages/lokasi_kantor_page.dart';
+import '../pages/statistik_layanan_page.dart';
 import 'app_routes.dart';
 
 class KerangkaNavigasi extends StatefulWidget {
@@ -15,8 +20,7 @@ class KerangkaNavigasi extends StatefulWidget {
       _KerangkaNavigasiState();
 }
 
-class _KerangkaNavigasiState
-    extends State<KerangkaNavigasi> {
+class _KerangkaNavigasiState extends State<KerangkaNavigasi> {
   int indeksAktif = 0;
 
   final List<Widget> halaman = const [
@@ -31,9 +35,16 @@ class _KerangkaNavigasiState
     });
   }
 
-  Widget ikonWarga({
-    bool terpilih = false,
-  }) {
+  void bukaHalaman(Widget halamanBaru) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => halamanBaru,
+      ),
+    );
+  }
+
+  Widget ikonWarga({bool terpilih = false}) {
     return Builder(
       builder: (context) {
         final totalPengajuan =
@@ -49,7 +60,6 @@ class _KerangkaNavigasiState
                   ? Icons.person
                   : Icons.person_outline,
             ),
-
             if (totalPengajuan > 0)
               Positioned(
                 right: -8,
@@ -83,8 +93,7 @@ class _KerangkaNavigasiState
 
   @override
   Widget build(BuildContext context) {
-    final lebarLayar =
-        MediaQuery.of(context).size.width;
+    final lebarLayar = MediaQuery.of(context).size.width;
     final layarLebar = lebarLayar >= 600;
 
     return PopScope(
@@ -114,16 +123,32 @@ class _KerangkaNavigasiState
             } else if (index == 2) {
               ubahHalaman(2);
             } else if (index == 3) {
+              bukaHalaman(
+                const FormulirPengajuanPage(),
+              );
+            } else if (index == 4) {
+              bukaHalaman(
+                const ChatPage(),
+              );
+            } else if (index == 5) {
+              bukaHalaman(
+                const LokasiKantorPage(),
+              );
+            } else if (index == 6) {
+              bukaHalaman(
+                const StatistikLayananPage(),
+              );
+            } else if (index == 7) {
               Navigator.pushNamed(
                 context,
                 AppRoutes.pengaturanKota,
               );
-            } else if (index == 4) {
+            } else if (index == 8) {
               Navigator.pushNamed(
                 context,
                 AppRoutes.tentang,
               );
-            } else if (index == 5) {
+            } else if (index == 9) {
               Navigator.pushNamed(
                 context,
                 AppRoutes.keluar,
@@ -161,6 +186,30 @@ class _KerangkaNavigasiState
             ),
 
             NavigationDrawerDestination(
+              icon: Icon(Icons.assignment_outlined),
+              selectedIcon: Icon(Icons.assignment),
+              label: Text('Formulir Pengajuan'),
+            ),
+
+            NavigationDrawerDestination(
+              icon: Icon(Icons.chat_outlined),
+              selectedIcon: Icon(Icons.chat),
+              label: Text('Chat Bantuan'),
+            ),
+
+            NavigationDrawerDestination(
+              icon: Icon(Icons.location_on_outlined),
+              selectedIcon: Icon(Icons.location_on),
+              label: Text('Lokasi Kantor'),
+            ),
+
+            NavigationDrawerDestination(
+              icon: Icon(Icons.bar_chart_outlined),
+              selectedIcon: Icon(Icons.bar_chart),
+              label: Text('Statistik Layanan'),
+            ),
+
+            NavigationDrawerDestination(
               icon: Icon(Icons.settings_outlined),
               selectedIcon: Icon(Icons.settings),
               label: Text('Pengaturan Kota'),
@@ -193,13 +242,11 @@ class _KerangkaNavigasiState
                     selectedIcon: Icon(Icons.home),
                     label: Text('Beranda'),
                   ),
-
                   const NavigationRailDestination(
                     icon: Icon(Icons.list_outlined),
                     selectedIcon: Icon(Icons.list),
                     label: Text('Layanan'),
                   ),
-
                   NavigationRailDestination(
                     icon: ikonWarga(),
                     selectedIcon: ikonWarga(
@@ -209,7 +256,6 @@ class _KerangkaNavigasiState
                   ),
                 ],
               ),
-
             Expanded(
               child: halaman[indeksAktif],
             ),
@@ -227,13 +273,11 @@ class _KerangkaNavigasiState
                     selectedIcon: Icon(Icons.home),
                     label: 'Beranda',
                   ),
-
                   const NavigationDestination(
                     icon: Icon(Icons.list_outlined),
                     selectedIcon: Icon(Icons.list),
                     label: 'Layanan',
                   ),
-
                   NavigationDestination(
                     icon: ikonWarga(),
                     selectedIcon: ikonWarga(
