@@ -1,13 +1,14 @@
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
-import '../models/favorit_model.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../cubit/favorit_cubit.dart';
 import '../navigation/app_routes.dart';
 
 class LayananPage extends StatelessWidget {
   const LayananPage({super.key});
 
-  void bukaDetail(
+  Future<void> bukaDetail(
     BuildContext context,
     Map<String, String> layanan,
   ) async {
@@ -21,9 +22,7 @@ class LayananPage extends StatelessWidget {
 
     if (hasil != null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(hasil.toString()),
-        ),
+        SnackBar(content: Text(hasil.toString())),
       );
     }
   }
@@ -35,9 +34,6 @@ class LayananPage extends StatelessWidget {
     String jam,
     String keterangan,
   ) {
-    final favorit = context.watch<FavoritModel>();
-    final sudahFavorit = favorit.daftarFavorit.contains(nama);
-
     return Card(
       child: ListTile(
         leading: const Icon(
@@ -46,44 +42,50 @@ class LayananPage extends StatelessWidget {
         ),
         title: Text(
           nama,
-          style: const TextStyle(
-            fontWeight: FontWeight.bold,
-          ),
+          style: const TextStyle(fontWeight: FontWeight.bold),
         ),
         subtitle: Text(dinas),
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            IconButton(
-              onPressed: () {
-                if (sudahFavorit) {
-                  context.read<FavoritModel>().batalTandai(nama);
-                } else {
-                  context.read<FavoritModel>().tandai(nama);
-                }
+            BlocBuilder<FavoritCubit, Set<String>>(
+              builder: (context, favorit) {
+                final sudahFavorit = favorit.contains(nama);
+
+                return IconButton(
+                  tooltip: sudahFavorit
+                      ? 'Hapus dari favorit'
+                      : 'Tandai sebagai favorit',
+                  onPressed: () {
+                    final cubit = context.read<FavoritCubit>();
+
+                    if (sudahFavorit) {
+                      cubit.batalTandai(nama);
+                    } else {
+                      cubit.tandai(nama);
+                    }
+                  },
+                  icon: Icon(
+                    sudahFavorit
+                        ? Icons.star
+                        : Icons.star_border,
+                    color: sudahFavorit
+                        ? Colors.amber
+                        : Colors.grey,
+                  ),
+                );
               },
-              icon: Icon(
-                sudahFavorit
-                    ? Icons.star
-                    : Icons.star_border,
-                color: sudahFavorit
-                    ? Colors.amber
-                    : Colors.grey,
-              ),
             ),
             const Icon(Icons.arrow_forward),
           ],
         ),
         onTap: () {
-          bukaDetail(
-            context,
-            {
-              'namaLayanan': nama,
-              'dinas': dinas,
-              'jam': jam,
-              'keterangan': keterangan,
-            },
-          );
+          bukaDetail(context, {
+            'namaLayanan': nama,
+            'dinas': dinas,
+            'jam': jam,
+            'keterangan': keterangan,
+          });
         },
       ),
     );

@@ -1,19 +1,20 @@
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
-import 'models/favorit_model.dart';
-import 'models/pengajuan_model.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import 'cubit/favorit_cubit.dart';
+import 'cubit/pengajuan_cubit.dart';
 import 'navigation/app_routes.dart';
 
 void main() {
   runApp(
-    MultiProvider(
+    MultiBlocProvider(
       providers: [
-        ChangeNotifierProvider(
-          create: (context) => FavoritModel(),
+        BlocProvider<FavoritCubit>(
+          create: (_) => FavoritCubit(),
         ),
-        ChangeNotifierProvider(
-          create: (context) => PengajuanModel(),
+        BlocProvider<PengajuanCubit>(
+          create: (_) => PengajuanCubit(),
         ),
       ],
       child: const NusantaraCerdasApp(),

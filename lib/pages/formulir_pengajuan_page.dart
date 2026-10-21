@@ -1,8 +1,8 @@
 
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../models/pengajuan_model.dart';
+import '../cubit/pengajuan_cubit.dart';
 
 class FormulirPengajuanPage extends StatefulWidget {
   const FormulirPengajuanPage({super.key});
@@ -47,7 +47,9 @@ class _FormulirPengajuanPageState
     if (_layanan == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Silakan pilih layanan terlebih dahulu.'),
+          content: Text(
+            'Silakan pilih layanan terlebih dahulu.',
+          ),
         ),
       );
       return;
@@ -72,7 +74,7 @@ class _FormulirPengajuanPageState
 
     if (!mounted) return;
 
-    context.read<PengajuanModel>().tambahPengajuan(_layanan!);
+    context.read<PengajuanCubit>().tambahPengajuan(_layanan!);
 
     setState(() {
       _loading = false;
@@ -167,7 +169,9 @@ class _FormulirPengajuanPageState
                 value: _layanan,
                 decoration: const InputDecoration(
                   labelText: 'Bidang Layanan',
-                  prefixIcon: Icon(Icons.miscellaneous_services),
+                  prefixIcon: Icon(
+                    Icons.miscellaneous_services,
+                  ),
                   border: OutlineInputBorder(),
                 ),
                 items: _daftarLayanan.map((layanan) {
@@ -234,7 +238,8 @@ class _FormulirPengajuanPageState
               // Persetujuan penggunaan data
               CheckboxListTile(
                 contentPadding: EdgeInsets.zero,
-                controlAffinity: ListTileControlAffinity.leading,
+                controlAffinity:
+                    ListTileControlAffinity.leading,
                 value: _setuju,
                 onChanged: (value) {
                   setState(() {
@@ -253,7 +258,8 @@ class _FormulirPengajuanPageState
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: _loading ? null : _kirimPengajuan,
+                  onPressed:
+                      _loading ? null : _kirimPengajuan,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xff087cf0),
                     foregroundColor: Colors.white,

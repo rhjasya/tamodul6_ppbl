@@ -1,8 +1,8 @@
 
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../models/pengajuan_model.dart';
+import '../cubit/pengajuan_cubit.dart';
 import '../pages/beranda_page.dart';
 import '../pages/layanan_page.dart';
 import '../pages/warga_page.dart';
@@ -44,14 +44,13 @@ class _KerangkaNavigasiState extends State<KerangkaNavigasi> {
     );
   }
 
+  // Badge jumlah pengajuan menggunakan BlocSelector.
+  // Hanya bagian ikon Warga yang dibangun ulang
+  // ketika jumlah pengajuan berubah.
   Widget ikonWarga({bool terpilih = false}) {
-    return Builder(
-      builder: (context) {
-        final totalPengajuan =
-            context.select<PengajuanModel, int>(
-          (model) => model.totalPengajuan,
-        );
-
+    return BlocSelector<PengajuanCubit, List<String>, int>(
+      selector: (daftarPengajuan) => daftarPengajuan.length,
+      builder: (context, totalPengajuan) {
         return Stack(
           clipBehavior: Clip.none,
           children: [
@@ -119,9 +118,9 @@ class _KerangkaNavigasiState extends State<KerangkaNavigasi> {
             if (index == 0) {
               ubahHalaman(0);
             } else if (index == 1) {
-              ubahHalaman(1);
+              ubahHalaman(0);
             } else if (index == 2) {
-              ubahHalaman(2);
+              ubahHalaman(1);
             } else if (index == 3) {
               bukaHalaman(
                 const FormulirPengajuanPage(),
@@ -166,61 +165,51 @@ class _KerangkaNavigasiState extends State<KerangkaNavigasi> {
                 ),
               ),
             ),
-
             NavigationDrawerDestination(
               icon: Icon(Icons.home_outlined),
               selectedIcon: Icon(Icons.home),
               label: Text('Beranda'),
             ),
-
             NavigationDrawerDestination(
               icon: Icon(Icons.list_outlined),
               selectedIcon: Icon(Icons.list),
               label: Text('Layanan'),
             ),
-
             NavigationDrawerDestination(
               icon: Icon(Icons.person_outline),
               selectedIcon: Icon(Icons.person),
               label: Text('Warga'),
             ),
-
             NavigationDrawerDestination(
               icon: Icon(Icons.assignment_outlined),
               selectedIcon: Icon(Icons.assignment),
               label: Text('Formulir Pengajuan'),
             ),
-
             NavigationDrawerDestination(
               icon: Icon(Icons.chat_outlined),
               selectedIcon: Icon(Icons.chat),
               label: Text('Chat Bantuan'),
             ),
-
             NavigationDrawerDestination(
               icon: Icon(Icons.location_on_outlined),
               selectedIcon: Icon(Icons.location_on),
               label: Text('Lokasi Kantor'),
             ),
-
             NavigationDrawerDestination(
               icon: Icon(Icons.bar_chart_outlined),
               selectedIcon: Icon(Icons.bar_chart),
               label: Text('Statistik Layanan'),
             ),
-
             NavigationDrawerDestination(
               icon: Icon(Icons.settings_outlined),
               selectedIcon: Icon(Icons.settings),
               label: Text('Pengaturan Kota'),
             ),
-
             NavigationDrawerDestination(
               icon: Icon(Icons.info_outline),
               selectedIcon: Icon(Icons.info),
               label: Text('Tentang Aplikasi'),
             ),
-
             NavigationDrawerDestination(
               icon: Icon(Icons.logout),
               selectedIcon: Icon(Icons.logout),
@@ -257,7 +246,10 @@ class _KerangkaNavigasiState extends State<KerangkaNavigasi> {
                 ],
               ),
             Expanded(
-              child: halaman[indeksAktif],
+              child: IndexedStack(
+                index: indeksAktif,
+                children: halaman,
+              ),
             ),
           ],
         ),

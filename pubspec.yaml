@@ -12,12 +12,13 @@ environment:
 # dependencies can be manually updated by changing the version numbers below to
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
+
 dependencies:
   flutter:
     sdk: flutter
 
   cupertino_icons: ^1.0.8
-  provider: ^6.1.5+1
+  flutter_bloc: ^9.1.1
   flutter_map: ^8.3.2
   latlong2: ^0.10.1
   fl_chart: ^1.2.0

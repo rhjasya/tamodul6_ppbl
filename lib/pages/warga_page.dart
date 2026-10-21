@@ -1,7 +1,9 @@
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
-import '../models/favorit_model.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../cubit/favorit_cubit.dart';
+import '../cubit/pengajuan_cubit.dart';
 import '../navigation/app_routes.dart';
 
 class WargaPage extends StatelessWidget {
@@ -26,9 +28,7 @@ class WargaPage extends StatelessWidget {
               ),
             ),
           ),
-
           const SizedBox(height: 20),
-
           const Text(
             'Warga Nusantara',
             style: TextStyle(
@@ -36,7 +36,6 @@ class WargaPage extends StatelessWidget {
               fontWeight: FontWeight.bold,
             ),
           ),
-
           const SizedBox(height: 25),
 
           Container(
@@ -56,17 +55,11 @@ class WargaPage extends StatelessWidget {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-
                 SizedBox(height: 15),
-
                 Text('Nama: Rhajasya Putra Ansar'),
-
                 SizedBox(height: 10),
-
                 Text('NIK: 707012400090'),
-
                 SizedBox(height: 10),
-
                 Text('Alamat: Kota Nusantara'),
               ],
             ),
@@ -74,8 +67,8 @@ class WargaPage extends StatelessWidget {
 
           const SizedBox(height: 25),
 
-          Consumer<FavoritModel>(
-            builder: (context, favorit, child) {
+          BlocBuilder<FavoritCubit, Set<String>>(
+            builder: (context, daftarFavorit) {
               return Container(
                 width: double.infinity,
                 padding: const EdgeInsets.all(20),
@@ -93,28 +86,76 @@ class WargaPage extends StatelessWidget {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-
                     const SizedBox(height: 15),
 
-                    if (favorit.daftarFavorit.isEmpty)
+                    if (daftarFavorit.isEmpty)
                       const Text(
                         'Belum ada layanan favorit.',
-                        style: TextStyle(
-                          color: Colors.grey,
-                        ),
+                        style: TextStyle(color: Colors.grey),
                       )
                     else
-                      ...favorit.daftarFavorit.map(
-                        (namaLayanan) {
-                          return ListTile(
-                            contentPadding: EdgeInsets.zero,
-                            leading: const Icon(
-                              Icons.star,
-                              color: Colors.amber,
-                            ),
-                            title: Text(namaLayanan),
-                          );
-                        },
+                      ...daftarFavorit.map(
+                        (namaLayanan) => ListTile(
+                          contentPadding: EdgeInsets.zero,
+                          leading: const Icon(
+                            Icons.star,
+                            color: Colors.amber,
+                          ),
+                          title: Text(namaLayanan),
+                          trailing: IconButton(
+                            tooltip: 'Hapus favorit',
+                            icon: const Icon(Icons.delete_outline),
+                            onPressed: () {
+                              context
+                                  .read<FavoritCubit>()
+                                  .batalTandai(namaLayanan);
+                            },
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+              );
+            },
+          ),
+
+          const SizedBox(height: 25),
+
+          BlocBuilder<PengajuanCubit, List<String>>(
+            builder: (context, daftarPengajuan) {
+              return Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Daftar Pengajuan',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Total pengajuan: ${daftarPengajuan.length}',
+                    ),
+                    const SizedBox(height: 12),
+                    if (daftarPengajuan.isEmpty)
+                      const Text('Belum ada pengajuan.')
+                    else
+                      ...daftarPengajuan.map(
+                        (nama) => ListTile(
+                          contentPadding: EdgeInsets.zero,
+                          leading: const Icon(
+                            Icons.assignment_outlined,
+                          ),
+                          title: Text(nama),
+                        ),
                       ),
                   ],
                 ),
@@ -134,9 +175,7 @@ class WargaPage extends StatelessWidget {
                   AppRoutes.riwayatLaporan,
                 );
               },
-              child: const Text(
-                'Lihat Riwayat Laporan',
-              ),
+              child: const Text('Lihat Riwayat Laporan'),
             ),
           ),
         ],

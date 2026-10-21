@@ -1,7 +1,8 @@
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
-import '../models/pengajuan_model.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../cubit/pengajuan_cubit.dart';
 
 class DetailLayananPage extends StatefulWidget {
   final String namaLayanan;
@@ -22,28 +23,23 @@ class DetailLayananPage extends StatefulWidget {
       _DetailLayananPageState();
 }
 
-class _DetailLayananPageState
-    extends State<DetailLayananPage> {
+class _DetailLayananPageState extends State<DetailLayananPage> {
   bool sedangMengirim = false;
 
   Future<void> ajukanPermohonan() async {
+    if (sedangMengirim) return;
+
     setState(() {
       sedangMengirim = true;
     });
 
-    await Future.delayed(
-      const Duration(seconds: 1),
-    );
+    await Future.delayed(const Duration(seconds: 1));
 
     if (!mounted) return;
 
-    context.read<PengajuanModel>().tambahPengajuan(
-          widget.namaLayanan,
-        );
-
-    setState(() {
-      sedangMengirim = false;
-    });
+    context
+        .read<PengajuanCubit>()
+        .tambahPengajuan(widget.namaLayanan);
 
     Navigator.pop(
       context,
@@ -59,7 +55,6 @@ class _DetailLayananPageState
         backgroundColor: const Color(0xff087cf0),
         foregroundColor: Colors.white,
       ),
-
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Column(
@@ -72,18 +67,13 @@ class _DetailLayananPageState
                 fontWeight: FontWeight.bold,
               ),
             ),
-
             const SizedBox(height: 25),
 
             const Text(
               'Dinas Penanggung Jawab',
-              style: TextStyle(
-                color: Colors.grey,
-              ),
+              style: TextStyle(color: Colors.grey),
             ),
-
             const SizedBox(height: 5),
-
             Text(
               widget.dinas,
               style: const TextStyle(
@@ -91,18 +81,13 @@ class _DetailLayananPageState
                 fontWeight: FontWeight.bold,
               ),
             ),
-
             const SizedBox(height: 20),
 
             const Text(
               'Jam Operasional',
-              style: TextStyle(
-                color: Colors.grey,
-              ),
+              style: TextStyle(color: Colors.grey),
             ),
-
             const SizedBox(height: 5),
-
             Text(
               widget.jam,
               style: const TextStyle(
@@ -110,38 +95,28 @@ class _DetailLayananPageState
                 fontWeight: FontWeight.bold,
               ),
             ),
-
             const SizedBox(height: 20),
 
             const Text(
               'Keterangan',
-              style: TextStyle(
-                color: Colors.grey,
-              ),
+              style: TextStyle(color: Colors.grey),
             ),
-
             const SizedBox(height: 5),
-
             Text(
               widget.keterangan,
-              style: const TextStyle(
-                fontSize: 16,
-              ),
+              style: const TextStyle(fontSize: 16),
             ),
-
             const SizedBox(height: 30),
 
             SizedBox(
               width: double.infinity,
               height: 55,
               child: ElevatedButton(
-                onPressed: sedangMengirim
-                    ? null
-                    : ajukanPermohonan,
+                onPressed:
+                    sedangMengirim ? null : ajukanPermohonan,
                 child: sedangMengirim
                     ? const Row(
-                        mainAxisAlignment:
-                            MainAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           SizedBox(
                             width: 20,
@@ -154,9 +129,7 @@ class _DetailLayananPageState
                           Text('Mengirim...'),
                         ],
                       )
-                    : const Text(
-                        'Ajukan Permohonan',
-                      ),
+                    : const Text('Ajukan Permohonan'),
               ),
             ),
           ],
