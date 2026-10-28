@@ -20,7 +20,8 @@ class KerangkaNavigasi extends StatefulWidget {
       _KerangkaNavigasiState();
 }
 
-class _KerangkaNavigasiState extends State<KerangkaNavigasi> {
+class _KerangkaNavigasiState
+    extends State<KerangkaNavigasi> {
   int indeksAktif = 0;
 
   final List<Widget> halaman = const [
@@ -44,12 +45,16 @@ class _KerangkaNavigasiState extends State<KerangkaNavigasi> {
     );
   }
 
-  // Badge jumlah pengajuan menggunakan BlocSelector.
-  // Hanya bagian ikon Warga yang dibangun ulang
-  // ketika jumlah pengajuan berubah.
+  void bukaRoute(String route) {
+    Navigator.pop(context);
+    Navigator.pushNamed(context, route);
+  }
+
+  // Ikon Warga dengan badge jumlah pengajuan.
   Widget ikonWarga({bool terpilih = false}) {
     return BlocSelector<PengajuanCubit, List<String>, int>(
-      selector: (daftarPengajuan) => daftarPengajuan.length,
+      selector: (daftarPengajuan) =>
+          daftarPengajuan.length,
       builder: (context, totalPengajuan) {
         return Stack(
           clipBehavior: Clip.none,
@@ -90,9 +95,29 @@ class _KerangkaNavigasiState extends State<KerangkaNavigasi> {
     );
   }
 
+  // Menu samping tetap menggunakan tampilan asli.
+  Widget menuSamping(
+    IconData ikon,
+    IconData ikonTerpilih,
+    String judul,
+    VoidCallback aksi,
+  ) {
+    return ListTile(
+      leading: Icon(ikon),
+      title: Text(judul),
+      onTap: aksi,
+    );
+  }
+
+  void pilihHalaman(int index) {
+    Navigator.pop(context);
+    ubahHalaman(index);
+  }
+
   @override
   Widget build(BuildContext context) {
-    final lebarLayar = MediaQuery.of(context).size.width;
+    final lebarLayar =
+        MediaQuery.of(context).size.width;
     final layarLebar = lebarLayar >= 600;
 
     return PopScope(
@@ -115,47 +140,56 @@ class _KerangkaNavigasiState extends State<KerangkaNavigasi> {
           onDestinationSelected: (index) {
             Navigator.pop(context);
 
-            if (index == 0) {
-              ubahHalaman(0);
-            } else if (index == 1) {
-              ubahHalaman(0);
-            } else if (index == 2) {
-              ubahHalaman(1);
-            } else if (index == 3) {
-              bukaHalaman(
-                const FormulirPengajuanPage(),
-              );
-            } else if (index == 4) {
-              bukaHalaman(
-                const ChatPage(),
-              );
-            } else if (index == 5) {
-              bukaHalaman(
-                const LokasiKantorPage(),
-              );
-            } else if (index == 6) {
-              bukaHalaman(
-                const StatistikLayananPage(),
-              );
-            } else if (index == 7) {
-              Navigator.pushNamed(
-                context,
-                AppRoutes.pengaturanKota,
-              );
-            } else if (index == 8) {
-              Navigator.pushNamed(
-                context,
-                AppRoutes.tentang,
-              );
-            } else if (index == 9) {
-              Navigator.pushNamed(
-                context,
-                AppRoutes.keluar,
-              );
+            switch (index) {
+              case 0:
+                ubahHalaman(0);
+                break;
+              case 1:
+                ubahHalaman(1);
+                break;
+              case 2:
+                ubahHalaman(2);
+                break;
+              case 3:
+                bukaHalaman(
+                  const FormulirPengajuanPage(),
+                );
+                break;
+              case 4:
+                bukaHalaman(const ChatPage());
+                break;
+              case 5:
+                bukaHalaman(
+                  const LokasiKantorPage(),
+                );
+                break;
+              case 6:
+                bukaHalaman(
+                  const StatistikLayananPage(),
+                );
+                break;
+              case 7:
+                Navigator.pushNamed(
+                  context,
+                  AppRoutes.pengaturanKota,
+                );
+                break;
+              case 8:
+                Navigator.pushNamed(
+                  context,
+                  AppRoutes.tentang,
+                );
+                break;
+              case 9:
+                Navigator.pushNamed(
+                  context,
+                  AppRoutes.keluar,
+                );
+                break;
             }
           },
-          children: const [
-            Padding(
+          children: [
+            const Padding(
               padding: EdgeInsets.all(20),
               child: Text(
                 'Nusantara Cerdas',
@@ -165,52 +199,64 @@ class _KerangkaNavigasiState extends State<KerangkaNavigasi> {
                 ),
               ),
             ),
-            NavigationDrawerDestination(
+
+            const NavigationDrawerDestination(
               icon: Icon(Icons.home_outlined),
               selectedIcon: Icon(Icons.home),
               label: Text('Beranda'),
             ),
-            NavigationDrawerDestination(
+
+            const NavigationDrawerDestination(
               icon: Icon(Icons.list_outlined),
               selectedIcon: Icon(Icons.list),
               label: Text('Layanan'),
             ),
+
             NavigationDrawerDestination(
-              icon: Icon(Icons.person_outline),
-              selectedIcon: Icon(Icons.person),
-              label: Text('Warga'),
+              icon: ikonWarga(),
+              selectedIcon: ikonWarga(
+                terpilih: true,
+              ),
+              label: const Text('Warga'),
             ),
-            NavigationDrawerDestination(
+
+            const NavigationDrawerDestination(
               icon: Icon(Icons.assignment_outlined),
               selectedIcon: Icon(Icons.assignment),
               label: Text('Formulir Pengajuan'),
             ),
-            NavigationDrawerDestination(
+
+            const NavigationDrawerDestination(
               icon: Icon(Icons.chat_outlined),
               selectedIcon: Icon(Icons.chat),
               label: Text('Chat Bantuan'),
             ),
-            NavigationDrawerDestination(
+
+            const NavigationDrawerDestination(
               icon: Icon(Icons.location_on_outlined),
               selectedIcon: Icon(Icons.location_on),
               label: Text('Lokasi Kantor'),
             ),
-            NavigationDrawerDestination(
+
+            const NavigationDrawerDestination(
               icon: Icon(Icons.bar_chart_outlined),
               selectedIcon: Icon(Icons.bar_chart),
               label: Text('Statistik Layanan'),
             ),
-            NavigationDrawerDestination(
+
+            const NavigationDrawerDestination(
               icon: Icon(Icons.settings_outlined),
               selectedIcon: Icon(Icons.settings),
               label: Text('Pengaturan Kota'),
             ),
-            NavigationDrawerDestination(
+
+            const NavigationDrawerDestination(
               icon: Icon(Icons.info_outline),
               selectedIcon: Icon(Icons.info),
               label: Text('Tentang Aplikasi'),
             ),
-            NavigationDrawerDestination(
+
+            const NavigationDrawerDestination(
               icon: Icon(Icons.logout),
               selectedIcon: Icon(Icons.logout),
               label: Text('Keluar'),
@@ -224,7 +270,8 @@ class _KerangkaNavigasiState extends State<KerangkaNavigasi> {
               NavigationRail(
                 selectedIndex: indeksAktif,
                 onDestinationSelected: ubahHalaman,
-                labelType: NavigationRailLabelType.all,
+                labelType:
+                    NavigationRailLabelType.all,
                 destinations: [
                   const NavigationRailDestination(
                     icon: Icon(Icons.home_outlined),
@@ -245,6 +292,7 @@ class _KerangkaNavigasiState extends State<KerangkaNavigasi> {
                   ),
                 ],
               ),
+
             Expanded(
               child: IndexedStack(
                 index: indeksAktif,
